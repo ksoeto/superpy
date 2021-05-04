@@ -14,9 +14,6 @@ def main():
     parser.add_argument('product',metavar='product', type=str, help='find your product')
     args = parser.parse_args()
     product= args.product
-    buy = subparser.add_parser('buy', help='register bought products')
-    sell = subparser.add_parser('sell', help='register sold product')
-    report = subparser.add_parser('report', help='report transactions')
 
 def write_to_csv(dict):
     with open('inventory.csv', 'w', newline='') as csvfile:
