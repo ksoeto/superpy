@@ -10,119 +10,113 @@ __human_name__ = 'superpy'
 
 # Your code below this line.
 def main():
-    pass
 
-#argparse function
+    #argparse function 
+    parser= argparse.ArgumentParser(description="My supermarket")
+    subparsers=parser.add_subparsers(dest="command")
+    parser.add_argument("-s", help="open the user inventory")
 
-    parser = argparse.ArgumentParser(description="my supemarket")
-    parser.add_argument("product", metavar="product", type=str, help="find your product")
-    args = parser.parse_args()
-    product = args.product
+    
     # inventory
     inventory_parser = subparsers.add_parser("buy", help="bought product")
-    inventory_parser.add_argument("item", action="store", help="New product")
-    inventory_parser.add_argument("--read-only",type=datetime.date.isoformat,action="store_true",help="Set date time",)
-    # sell
+    inventory_parser.add_argument('--price', action="store", help=" new item")
+    inventory_parser.add_argument('--product', type=str, metavar='', required = True, help='Enter name of the bought product')
+    inventory_parser.add_argument('--expiration-date',type= datetime.date.fromisoformat,help="insert date as: YYYY-MM-DD",)
+    #  sell
     sell_parser = subparsers.add_parser("sold", help="Remove product")
     sell_parser.add_argument("item", action="store", help="The product to remove")
     sell_parser.add_argument("--recursive","-r",default=False,action="store_true",help="Remove the items",)
 
-    print(args.sum(args.product))
+    #report parser
+    search_parser = subparsers.add_parser("report", help="report transactions")    
+    search_parser.add_argument("option",action='store_true', help="show current inventory")
+    search_parser.add_argument("--yesterday", action="store_true", help="show yesterday's inventory")
     
 
-#making the file inventory.csv 
-
+    args = parser.parse_args()
+    
+    return args  
 
 def csv_inventory():
-    csv_columns = ["product","count","price",]
-    dict_data = [
-        {"product": "apple", "count": 16, "price": 1},
-        {"product": "coffee", "count": 23, "price": 2},
-        {"product": "chicken", "count": 43, "price": 4},
-        {"product": "yoghurt", "count": 22, "price": 2},
-        {"product": "coca cola", "count": 60, "price": 3},
-        ]
-    csv_file = "Inventory.csv"
-    try:
-        with open(csv_file, "w") as csvfile:
-            writer = csv.DictWriter(csvfile, fieldnames=csv_columns, delimiter="\t")
-            writer.writeheader()
-            for data in dict_data:
-                writer.writerow(data)
-    except IOError:
-        print("I/O error")
+    with open("inventory.csv", "w", newline='') as csvfile:
+        writer = csv.writer(csvfile, delimiter="\t")
+        inventory_file = csv.writer(csvfile)
+        inventory_file.writerow(['product_name', 'buy_price', 'expiration_date']) 
 
+def buy_function():
+    lines = 0
+    item_index = lines
+    product = args.product
+    buy_price = args.price
+    expiration_date = args.expiration_date
+    with open("inventory.csv", "r",newline = '') as csvfile: 
+        reader = csv.reader(csvfile)
+        for row in reader:
+                lines += 1
+    with open('inventory.csv', 'a', newline='') as csvfile:
+            writer = csv.writer(csvfile)
 
-#making the file sold.csv 
+            row= [
+                    item_index, 
+                    args.product,
+                    args.price, 
+                    args.expirationdate,
+                ]
+            writer.writerow(row) 
+    with open('inventory.csv', 'r', newline='') as csvfile:
+            reader = csv.reader(csvfile)
+            list_ids = []
+            for row in reader:
+                if args.product in row:
+                    if datetime.datetime.strptime(self.get_date(), '%Y-%m-%d %H:%M:%S') < datetime.datetime.strptime((row[4]), '%Y-%m-%d'):
+                        list_ids.append(row[0]) 
+        
+#selling function 
 
+def sell_function(product_name, sell_price):
+    lines = 0
+    with open('sold.csv','r',newline="") as csvfile:
+         reader = csv.reader(csvfile)
+         for row in reader:
+             lines += 1
+             sold_item = []
+    with open('sold.csv', 'r', newline='') as csvfile:
+        reader = csv.reader(csvfile)
+        for row in reader:
+            sold_item.append(row[1])
+    with open('inventory.csv', 'r', newline='') as csvfile:
+        reader = csv.reader(csvfile)
+        sell_data = []
+        for row in reader:
+            if args.prodname in row:
+                sell_data.append(row[0])
 
-def csv_sold():
-     fieldnames = ["bought_id", "sell_date", "sell_price"]
-     rows = [
-         {"product": "apple", "count": 16, "price": 1},
-         {"product": "coffee", "count": 23, "price": 2},
-         {"product": "chicken", "count": 43, "price": 4},
-         {"product": "yoghurt", "count": 22, "price": 2},
-         {"product": "cheese", "count": 52, "price": 3},
-         {"product": "coca cola", "count": 60, "price": 3},
-         {"product": "broccoli", "count": 32, "price": 2},
-         {"product": "milk", "count": 43, "price": 2},
-         ]
-     csv_file = "sold.csv"
-     with open("sold.csv", "w", newline="") as csvfile:
-         writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=" ")
-         writer.writeheader()
-         for rows in writer:
-             writer.writerows(rows)
-             print(rows)
-             sell_data = csv_data("sold.csv")
-             return sell_data
+def sold_product(date):
+    date = datetime.datetime.strptime(date, "%Y-%m-%d").date()
+    sold_list = []
+    with open('sold.csv', 'r') as csv_file:
+        for line in csv_file:
+            if "product_id" in line:
+                continue
+            line = line[:-1]
+            sell_date = line.split(",")[3]
+            sell_date2 = dt.datetime.strptime(sell_date, "%Y-%m-%d").date()
 
-#buying the products
+            if sell_date2 <= date:
+                sold_list.append(line.split(","))
 
-def buy_function(store_list, product_name, buy_price):
-    store_data = [
-        {"product": "apple", "count": 16, "price": 1},
-        {"product": "coffee", "count": 23, "price": 2},
-        {"product": "chicken", "count": 43, "price": 4},
-        {"product": "yoghurt", "count": 22, "price": 2},
-        {"product": "coca cola", "count": 60, "price": 3},
-        ]
-    with open("sold.csv", "a", newline="") as csvfile:
-        csvwriter = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter="\t")
-        for product in store_data:
-            writer.writerow(product)
-            if args.command == "sold":
-                product = args.product
-                (product["product_name"] == product_name
-                 and product["price"] == buy_price
-                 and product['count'] == store_list)
-                item_index = index
-                if item_index == -1:
-                        buy_data.append(
-                            {   "Product Name": product_name,
-                                "Count": count,
-                                "Buy Price": buy_price,
-                                "Expiration Date": expiration_date,})
-                        return buy_data
+    return sold_list
 
 
 def advance_time():
-    if args.command == "date":
+    if args.advance_time:
+        expiration_date = datetime.date.fromisoformat
         new_day = (datetime.datetime.today() + datetime.timedelta(days=n)).strftime("%Y-%m-%d")
-        global today
         today = new_day  # overwrite today with new_day
-        print("OK")
-        
-
-csv_inventory()
-advance_time()
-buy_function()
-csv_sold()
-
-       
-                
-                
-        
+                 
+            
 if __name__ == '__main__':
-    main()
+    args = main()
+    csv_inventory()
+    buy_function(args)
+    sell_function()
